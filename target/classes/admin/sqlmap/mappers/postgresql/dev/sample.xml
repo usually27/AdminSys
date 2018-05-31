@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="admin.dev.service.SampleMapper">
+
+	<select id="selectInfoList" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		SELECT
+		  GID,
+		  OBJECTID,
+		  LANDCODE,
+		  U_NAME,
+		  U_NUMBER,
+		  U_TYPE,
+		  ADDRESS,
+		  U_AREA,
+		  NOT_NBR,
+		  NOT_TMD,
+		  U_REMARK,
+		  TEXT_ANGLE,
+		  TEXT_SIZE,
+		  TEXTSTRING,
+		  SHAPE_AREA,
+		  SHAPE_LEN,
+		  GEOM
+		FROM
+		  PUBLIC.APARTA_FINAL
+	]]>
+	</select>
+
+</mapper>

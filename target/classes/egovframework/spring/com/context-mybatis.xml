@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- SqlSession setup for MyBatis Database Layer -->
+	<!--
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+	 -->
+	<bean id="sqlSession" class="admin.common.database.HotDeployableMybatisSessionFactoryBean">
+		<property name="dataSource" ref="dataSource-oracle" />
+		<property name="configLocation" value="classpath:/admin/sqlmap/config/sql-mapper-config.xml" />
+		<property name="mapperLocations" value="classpath:/admin/sqlmap/mappers/oracle/**/*.xml" />
+		<property name="interval" value="500" /><!-- ms -->
+	</bean>
+
+	<bean id="sqlSession2" class="admin.common.database.HotDeployableMybatisSessionFactoryBean">
+		<property name="dataSource" ref="dataSource-postgresql" />
+		<property name="configLocation" value="classpath:/admin/sqlmap/config/sql-mapper-config.xml" />
+		<property name="mapperLocations" value="classpath:/admin/sqlmap/mappers/postgresql/**/*.xml" />
+		<property name="interval" value="500" /><!-- ms -->
+	</bean>
+
+ 	<bean class="egovframework.rte.psl.dataaccess.mapper.MapperConfigurer">
+		<property name="basePackage" value="admin.code.**.service" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSession2" />
+	</bean>
+
+ 	<bean class="egovframework.rte.psl.dataaccess.mapper.MapperConfigurer">
+		<property name="basePackage" value="admin.**.**.service" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSession" />
+	</bean>
+
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
+		<constructor-arg index="0" ref="sqlSession" />
+	</bean>
+
+	<bean id="sqlSessionTemplate2" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
+		<constructor-arg index="0" ref="sqlSession2" />
+	</bean>
+
+</beans>

@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="admin.layer.service.LayerMgrMapper">
+
+	<select id="layerList" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		SELECT *
+		FROM	LAYER_INFO
+		WHERE 1 = 1
+	]]>
+
+	<if test="layerIdGb != ''">
+				AND LAYER_ID LIKE #{layerIdGb} || '%'
+	</if>
+	<if test="layerName != ''">
+				AND LAYER_NM LIKE '%' || #{layerName} || '%'
+	</if>
+
+	<![CDATA[
+		ORDER BY LAYER_ID
+	]]>
+	</select>
+
+	<insert id="insertLayer" parameterType="map">
+	<![CDATA[
+		INSERT INTO LAYER_INFO(LAYER_ID, LAYER_NM, LAYER_DESC, LAYER_PATH, TABLE_NM, USE_FLAG, VISIBLE, MAX_LEVEL, MIN_LEVEL)
+		VALUES ((SELECT #{layerGbNm} || LPAD( NVL( MAX(TO_NUMBER(SUBSTR(LAYER_ID, LENGTH( #{layerGbNm} )+1,3),'999')), 0) +1, 3, '0') FROM LAYER_INFO WHERE LAYER_ID LIKE #{layerGbNm} || '%'), #{layerNm}, #{layerNm}, #{layerPath}, #{tableNm}, 'Y', 'true', '', '')
+	]]>
+	</insert>
+
+	<update id="updateLayer" parameterType="map">
+	<![CDATA[
+		UPDATE LAYER_INFO
+		SET	LAYER_NM = #{layerNm},
+				LAYER_PATH = #{layerPath} ,
+				TABLE_NM = #{tableNm},
+				USE_FLAG = 'Y'
+		WHERE layer_id = #{layerId}
+	]]>
+	</update>
+
+	<update id="updateLayerMenu" parameterType="map">
+	<![CDATA[
+		UPDATE LAYER_INFORMATION
+		SET	MENU_URL = #{layerPath},
+				TABLE_NM = #{tableNm}
+		WHERE LAYER_ID = #{layerId}
+	]]>
+	</update>
+
+	<delete id="deleteLayer" parameterType="map">
+	<![CDATA[
+		DELETE FROM LAYER_INFO
+		WHERE LAYER_ID = #{layerId}
+	]]>
+	</delete>
+
+	<select id="menuInfoList" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		WITH LAYER_LIST
+		AS (
+				SELECT LAYER_ID, LAYER_NM, LAYER_PATH, TABLE_NM
+				FROM 	LAYER_INFO
+		)
+		SELECT T.MENU_ID,
+					T.PAR_MENU_ID,
+					T.ORDER_NO,
+					T.T_LVL as TREE_LEVEL,
+					M.MENU_NM,
+					M.LAYER_ID,
+					M.LAYER_NM,
+					DECODE( M.TABLE_NM, '','', '[' || M.TABLE_NM || ']' || M.LAYER_NM ) AS TABLE_NAME,
+					M.TABLE_NM,
+					M.LAYER_PATH,
+					M.USE_FLAG,
+					M.MENU_LEVEL,
+					't' AS EX,
+					DECODE( M.MENU_LEVEL, 3, DECODE(M.USE_FLAG, 'Y', '사용', 'N', '미사용'), '' ) AS USE_FLAG_YN,
+					(SELECT T.PAR_MENU_ID FROM LAYER_INFORMATION T WHERE T.MENU_ID = M.PAR_MENU_ID ) AS TOP_MENU_ID,
+					(SELECT COUNT(MENU_ID) FROM LAYER_INFORMATION T WHERE T.PAR_MENU_ID = M.MENU_ID ) AS CHILD_COUNT,
+					(SELECT T.MENU_LEVEL FROM LAYER_INFORMATION T WHERE T.MENU_ID = M.PAR_MENU_ID ) AS PAR_MENU_LEVEL,
+					(SELECT T.MENU_NM FROM LAYER_INFORMATION T WHERE T.MENU_ID = M.PAR_MENU_ID ) AS PAR_MENU_NM,
+					T.IS_LEAF,
+					M.MENU_ORDER_NO
+		FROM
+		(
+			SELECT MENU_ID,
+						MENU_NM,
+						NVL((SELECT P.LAYER_ID FROM LAYER_LIST P WHERE P.LAYER_ID = I.LAYER_ID), '') AS LAYER_ID,
+						NVL((SELECT P.LAYER_NM FROM LAYER_LIST P WHERE P.LAYER_ID = I.LAYER_ID), '') AS LAYER_NM,
+						NVL((SELECT P.TABLE_NM FROM LAYER_LIST P WHERE P.LAYER_ID = I.LAYER_ID), '') AS TABLE_NM,
+						NVL((SELECT P.LAYER_PATH FROM LAYER_LIST P WHERE P.LAYER_ID = I.LAYER_ID), '') AS LAYER_PATH,
+						USE_FLAG,
+						MENU_LEVEL,
+						PAR_MENU_ID,
+						MENU_ORDER_NO
+			FROM	LAYER_INFORMATION I
+		) M,
+		(
+			SELECT ROWNUM TR, A.*
+			FROM (
+						SELECT MENU_ID,
+									LEVEL AS T_LVL,
+									PAR_MENU_ID,
+									ORDER_NO,
+									DECODE((SELECT DISTINCT '1' FROM LAYER_INFORMATION START WITH PAR_MENU_ID = MT.MENU_ID CONNECT BY PRIOR MENU_ID = PAR_MENU_ID),NULL,'true','false') AS IS_LEAF
+						FROM LAYER_INFORMATION MT
+						START WITH PAR_MENU_ID = '0'
+						CONNECT BY PRIOR MENU_ID = PAR_MENU_ID
+						ORDER SIBLINGS BY ORDER_NO
+					) A
+		) T
+		WHERE M.MENU_ID = T.MENU_ID
+		ORDER BY MENU_ORDER_NO
+	]]>
+	</select>
+
+	<insert id="instMenu_1" parameterType="map" >
+	<![CDATA[
+		INSERT INTO LAYER_INFORMATION( MENU_ID, MENU_NM, MENU_LEVEL, ORDER_NO, USE_FLAG, MENU_URL, MENU_ORDER_NO, PAR_MENU_ID, TABLE_NM )
+		VALUES ( (SELECT 'M' || RPAD( LPAD( (nvl(MAX(ORDER_NO),0)+1), 3, '0'), 9, '0') FROM LAYER_INFORMATION WHERE MENU_LEVEL = 1),
+			#{rootMenuName}, 1,
+			(SELECT nvl(MAX(ORDER_NO),0)+1 FROM LAYER_INFORMATION WHERE MENU_LEVEL = 1),
+			#{rootUse}, 'notdevelop.do',
+			(SELECT nvl(MAX(MENU_ORDER_NO),0)+1 FROM LAYER_INFORMATION),
+			'M000000000', #{tableNm} )
+	]]>
+	</insert>
+
+	<select id="instGetMaxOrd_2" parameterType="map" resultType="int">
+	<![CDATA[
+		SELECT nvl(MAX(MENU_ORDER_NO),0)+1 MAX_MENU_ORDER_NO FROM LAYER_INFORMATION
+		WHERE MENU_ID IN (
+		SELECT MENU_ID FROM LAYER_INFORMATION
+		WHERE MENU_ID LIKE SUBSTR( #{menuId},1,4)||'%' OR PAR_MENU_ID LIKE SUBSTR( #{menuId},1,4)||'%' )
+	]]>
+	</select>
+
+	<update id="instUdtOrd_2" parameterType="int">
+	<![CDATA[
+		UPDATE LAYER_INFORMATION
+		SET MENU_ORDER_NO = MENU_ORDER_NO + 1
+		WHERE MENU_ORDER_NO > #{maxMenuOrderNo}
+	]]>
+	</update>
+
+	<insert id="instMenu_2" parameterType="map" >
+	<![CDATA[
+		INSERT INTO LAYER_INFORMATION
+			( MENU_ID, MENU_NM, PAR_MENU_ID, LAYER_ID, MENU_LEVEL, ORDER_NO, USE_FLAG, MENU_URL, MENU_ORDER_NO, TABLE_NM )
+		VALUES ( (SELECT SUBSTR( #{menuId}, 1, 4) ||
+			( SELECT RPAD( LPAD(  ( nvl(MAX(ORDER_NO),0) + 1 ), 3, '0'), 6, '0') FROM LAYER_INFORMATION WHERE PAR_MENU_ID = #{menuId} AND MENU_LEVEL = 2 ) FROM DUAL),
+			#{midMenuName}, #{menuId}, #{midLayerid}, 2,
+			(SELECT NVL(MAX(ORDER_NO),0)+1 FROM LAYER_INFORMATION WHERE PAR_MENU_ID = #{menuId} AND MENU_LEVEL = 2 ),
+			#{midUse}, #{midLayerpath}, #{maxMenuOrderNo}, #{tableNm} )
+	]]>
+	</insert>
+
+	<select id="instGetMaxOrd_3" parameterType="map" resultType="int">
+	<![CDATA[
+		SELECT NVL ((SELECT MAX (menu_order_no) + 1 MAX FROM LAYER_INFORMATION WHERE menu_id
+					IN (SELECT menu_id FROM LAYER_INFORMATION WHERE par_menu_id LIKE SUBSTR(#{menuId},1,7)||'%'    )),
+					(SELECT menu_order_no + 1 FROM LAYER_INFORMATION WHERE menu_id = #{menuId})) AS MAX
+		FROM DUAL
+	]]>
+	</select>
+
+	<select id="instGetMaxOrd2_4" parameterType="map" resultType="int">
+	<![CDATA[
+		SELECT NVL ((SELECT MAX (menu_order_no) + 1 MAX FROM LAYER_INFORMATION WHERE menu_id
+					IN (SELECT menu_id FROM LAYER_INFORMATION WHERE par_menu_id = #{menuId} )),
+					(SELECT menu_order_no + 1 FROM LAYER_INFORMATION WHERE menu_id = #{menuId})) AS MAX
+		FROM DUAL
+	]]>
+	</select>
+
+	<insert id="instMenu_3" parameterType="map" >
+	<![CDATA[
+		INSERT INTO LAYER_INFORMATION
+			( MENU_ID, MENU_NM, PAR_MENU_ID, LAYER_ID, MENU_LEVEL, ORDER_NO, USE_FLAG, MENU_URL, MENU_ORDER_NO, TABLE_NM )
+		VALUES ( (SELECT SUBSTR( #{menuId}, 1, 7) ||
+			LPAD( NVL( ( SELECT ( TO_NUMBER(SUBSTR(MAX(MENU_ID),8,3))+1 ) FROM LAYER_INFORMATION WHERE PAR_MENU_ID LIKE  SUBSTR(#{menuId},1,7)||'%' ) ,1), 3, '0') FROM DUAL),
+			#{leafMenuName}, #{menuId}, #{leafLayerid}, 3,
+			(SELECT NVL(MAX(ORDER_NO),0)+1 FROM LAYER_INFORMATION WHERE PAR_MENU_ID = #{menuId}),
+			#{leafUse}, #{leafLayerpath}, #{maxMenuOrderNo}, #{tableNm} )
+	]]>
+	</insert>
+
+	<insert id="instMenu_2_3" parameterType="map" >
+	<![CDATA[
+		INSERT INTO LAYER_INFORMATION
+			( MENU_ID, MENU_NM, PAR_MENU_ID, MENU_LEVEL, LAYER_ID, ORDER_NO, USE_FLAG, MENU_URL, MENU_ORDER_NO, TABLE_NM )
+		VALUES ( (SELECT SUBSTR( #{menuId}, 1, 7) ||
+			LPAD( NVL( ( SELECT TO_NUMBER(SUBSTR(MAX(MENU_ID),8,3))+1
+			FROM LAYER_INFORMATION
+			WHERE MENU_ID LIKE SUBSTR(#{menuId},1,7)||'%'
+			) ,1), 3, '0')
+			FROM DUAL),
+			#{midMenuName}, #{menuId}, 2, #{leafLayerid},
+			(SELECT NVL(MAX(ORDER_NO),0)+1
+			FROM LAYER_INFORMATION
+			WHERE PAR_MENU_ID = #{menuId}),
+			#{midUse}, 'notdevelop.do', #{maxMenuOrderNo}, #{tableNm} )
+	]]>
+	</insert>
+
+	<insert id="instMenu_2_4" parameterType="map" >
+	<![CDATA[
+		INSERT INTO LAYER_INFORMATION
+			( MENU_ID, MENU_NM, PAR_MENU_ID, LAYER_ID, MENU_LEVEL, ORDER_NO, USE_FLAG, MENU_URL, MENU_ORDER_NO, TABLE_NM )
+		VALUES ( (SELECT SUBSTR( #{menuId}, 1, 7) ||
+			LPAD( NVL( ( SELECT TO_NUMBER(SUBSTR(MAX(MENU_ID),8,3))+1
+			FROM LAYER_INFORMATION
+			WHERE MENU_ID LIKE SUBSTR(#{menuId},1,7)||'%'
+			) ,1), 3, '0')
+			FROM DUAL),
+			#{leafMenuName}, #{menuId}, #{leafLayerid}, 3,
+			(SELECT NVL(MAX(ORDER_NO),0)+1
+			FROM LAYER_INFORMATION
+			WHERE PAR_MENU_ID = #{menuId}),
+			#{leafUse}, #{layerpath}, #{maxMenuOrderNo}, #{tableNm} )
+	]]>
+	</insert>
+
+	<update id="updateMenu" parameterType="map" >
+	<![CDATA[
+		UPDATE LAYER_INFORMATION
+	]]>
+	<choose>
+		<when test="menuLevel == 1">
+			SET MENU_NM = #{rootMenuName},
+				   USE_FLAG = #{rootUse}
+		</when>
+		<when test="menuLevel == 2">
+			SET MENU_NM = #{midMenuName},
+				   USE_FLAG = #{midUse}
+		</when>
+		<when test="menuLevel == 3">
+			SET MENU_NM = #{leafMenuName},
+				   USE_FLAG = #{leafUse},
+				   LAYER_ID = #{layerid},
+				   MENU_URL = #{layerpath},
+				   TABLE_NM = #{tableNm}
+		</when>
+	</choose>
+	<![CDATA[
+		WHERE MENU_ID = #{menuId}
+	]]>
+	</update>
+
+	<update id="deleteUdtMenu" parameterType="map">
+	<![CDATA[
+		UPDATE LAYER_INFORMATION
+		SET		 MENU_ORDER_NO = MENU_ORDER_NO - 1
+		WHERE  MENU_ORDER_NO > (SELECT MENU_ORDER_NO FROM LAYER_INFORMATION WHERE MENU_ID = #{menuId} )
+	]]>
+	</update>
+
+	<update id="deleteUdtMenuOrder" parameterType="map">
+	<![CDATA[
+		UPDATE LAYER_INFORMATION
+		SET		 ORDER_NO = ORDER_NO - 1
+		WHERE	 ORDER_NO > (SELECT ORDER_NO FROM LAYER_INFORMATION WHERE MENU_ID = #{menuId} )
+		AND		 PAR_MENU_ID = #{parMenuId}
+	]]>
+	</update>
+
+	<delete id="deleteMenu" parameterType="map">
+	<![CDATA[
+		DELETE FROM LAYER_INFORMATION
+		WHERE MENU_ID = #{menuId}
+	]]>
+	</delete>
+
+	<delete id="deleteMenuRole" parameterType="map">
+	<![CDATA[
+		DELETE FROM LAYER_MAPPING
+		WHERE LAYER_ID = #{menuId}
+	]]>
+	</delete>
+
+	<select id="layerSearchList" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		SELECT *
+		FROM	LAYER_INFO
+		WHERE 1=1
+	]]>
+	<if test="layerGb != NULL and layerGb != ''">
+		AND LAYER_ID LIKE #{layerGb} || '%'
+	</if>
+	<if test="layerGbNm != NULL and layerGbNm != ''">
+		AND LAYER_NM LIKE '%' || #{layerGbNm} || '%'
+	</if>
+	<![CDATA[
+		 ORDER BY LAYER_ID
+	]]>
+	</select>
+
+	<select id="moveMenuGetParMenuId" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		SELECT A.MENU_ID, A.MENU_ORDER_NO, B.ORDER_NO, MENU_LEVEL,
+					(SELECT T.MENU_LEVEL FROM LAYER_INFORMATION T WHERE T.MENU_ID = A.PAR_MENU_ID ) AS PAR_MENU_LEVEL
+		FROM	LAYER_INFORMATION A,
+	]]>
+		<choose>
+			<when test="upDownGb == 'up'">
+				(SELECT MAX(ORDER_NO) ORDER_NO
+			</when>
+			<when test="upDownGb == 'down'">
+				(SELECT MIN(ORDER_NO) ORDER_NO
+			</when>
+		</choose>
+	<![CDATA[
+		FROM LAYER_INFORMATION
+		WHERE PAR_MENU_ID = #{parMenuId}
+	]]>
+		<choose>
+			<when test="upDownGb == 'up'">
+				AND ORDER_NO <![CDATA[<]]> #{orderNo}) B
+			</when>
+			<when test="upDownGb == 'down'">
+				AND ORDER_NO <![CDATA[>]]> #{orderNo}) B
+			</when>
+		</choose>
+	<![CDATA[
+		WHERE A.PAR_MENU_ID = #{parMenuId}
+		AND A.ORDER_NO = B.ORDER_NO
+	]]>
+	</select>
+
+	<select id="updateMenuIdList" parameterType="String" resultType="String">
+	<![CDATA[
+		SELECT MENU_ID
+		FROM	LAYER_INFORMATION
+		START WITH PAR_MENU_ID = #{comMenuId}
+		CONNECT BY PRIOR MENU_ID = PAR_MENU_ID
+		ORDER SIBLINGS BY ORDER_NO
+	]]>
+	</select>
+
+	<update id="menuMoveOrderUdt">
+	<![CDATA[
+		UPDATE LAYER_INFORMATION
+		SET		ORDER_NO = #{orderNo}
+		WHERE	MENU_ID = #{menuId}
+	]]>
+	</update>
+
+	<update id="menuMoveMenuOrderUdt">
+	<![CDATA[
+		UPDATE LAYER_INFORMATION
+		SET		MENU_ORDER_NO = #{orderNo}
+		WHERE	MENU_ID = #{menuId}
+	]]>
+	</update>
+
+	<select id="layerAuthList" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		WITH LAYER_LIST
+		AS (
+			SELECT LAYER_ID, LAYER_NM, LAYER_PATH, TABLE_NM
+			FROM LAYER_INFO
+		)
+		SELECT T.MENU_ID,
+					T.PAR_MENU_ID,
+					T.ORDER_NO,
+					T.T_LVL as TREE_LEVEL,
+					M.MENU_NM,
+					M.LAYER_ID,
+					M.LAYER_NM,
+					DECODE( M.TABLE_NM, '','', '[' || M.TABLE_NM || ']' || M.LAYER_NM ) AS LAYER_NAME,
+					M.LAYER_PATH,
+					M.TABLE_NM,
+					M.USE_FLAG,
+					M.MENU_LEVEL,
+					't' AS EX,
+					DECODE( M.MENU_LEVEL, 3, DECODE(M.USE_FLAG, 'Y', '사용', 'N', '미사용'), '' ) AS USE_FLAG_YN,
+					(SELECT T.PAR_MENU_ID FROM LAYER_INFORMATION T WHERE T.MENU_ID = M.PAR_MENU_ID ) AS TOP_MENU_ID,
+					(SELECT COUNT(MENU_ID) FROM LAYER_INFORMATION T WHERE T.PAR_MENU_ID = M.MENU_ID ) AS CHILD_COUNT,
+					(SELECT T.MENU_LEVEL FROM LAYER_INFORMATION T WHERE T.MENU_ID = M.PAR_MENU_ID ) AS PAR_MENU_LEVEL,
+					(SELECT T.MENU_NM FROM LAYER_INFORMATION T WHERE T.MENU_ID = M.PAR_MENU_ID ) AS PAR_MENU_NM,
+					T.IS_LEAF,
+					M.MENU_ORDER_NO,
+					CASE WHEN P.LAYER_ID IS NULL THEN 'FALSE' ELSE 'TRUE' END AS MAPPING_MENU_ID,
+					CASE
+						WHEN P.LAYER_ID IS NULL OR P.READ = 'N' THEN 'FALSE'
+						WHEN P.LAYER_ID IS NOT NULL AND P.READ = 'Y' THEN 'TRUE'
+					END AS READ_AUTH,
+					CASE
+						WHEN P.LAYER_ID IS NULL OR P.WRITE = 'N' THEN 'FALSE'
+						WHEN P.LAYER_ID IS NOT NULL AND P.WRITE = 'Y' THEN 'TRUE'
+					END AS WRITE_AUTH
+		FROM
+		(
+			SELECT MENU_ID,
+						MENU_NM,
+						NVL((SELECT P.LAYER_ID FROM LAYER_LIST P WHERE P.LAYER_ID = I.LAYER_ID), '') AS LAYER_ID,
+						NVL((SELECT P.LAYER_NM FROM LAYER_LIST P WHERE P.LAYER_ID = I.LAYER_ID), '') AS LAYER_NM,
+						NVL((SELECT P.TABLE_NM FROM LAYER_LIST P WHERE P.LAYER_ID = I.LAYER_ID), '') AS TABLE_NM,
+						NVL((SELECT P.LAYER_PATH FROM LAYER_LIST P WHERE P.LAYER_ID = I.LAYER_ID), '') AS LAYER_PATH,
+						USE_FLAG,
+						MENU_LEVEL,
+						PAR_MENU_ID,
+						MENU_ORDER_NO
+			FROM	LAYER_INFORMATION I
+		) M ,
+		(
+			SELECT ROWNUM TR, A.*
+			FROM (
+				SELECT MENU_ID,
+							LEVEL AS T_LVL,
+							PAR_MENU_ID,
+							ORDER_NO,
+							DECODE((SELECT DISTINCT '1' FROM LAYER_INFORMATION START WITH PAR_MENU_ID = MT.MENU_ID CONNECT BY PRIOR MENU_ID = PAR_MENU_ID),NULL,'true','false') AS IS_LEAF
+				FROM LAYER_INFORMATION MT
+				START WITH PAR_MENU_ID = '0'
+				CONNECT BY PRIOR MENU_ID = PAR_MENU_ID
+				ORDER SIBLINGS BY ORDER_NO
+			) A
+		) T LEFT OUTER JOIN (SELECT * FROM LAYER_MAPPING WHERE ROLE_ID = #{roleId}) P ON (P.LAYER_ID = T.MENU_ID)
+		WHERE T.MENU_ID  = M.MENU_ID
+		ORDER BY MENU_ORDER_NO
+	]]>
+	</select>
+
+	<delete id="layerAuthEditDelete" parameterType="java.lang.String" >
+	<![CDATA[
+		DELETE FROM LAYER_MAPPING
+		WHERE ROLE_ID = #{authVal}
+	]]>
+	</delete>
+
+	<insert id="layerAuthEditInsert" >
+	<![CDATA[
+	INSERT INTO LAYER_MAPPING (ROLE_ID, LAYER_ID, READ, WRITE)
+	VALUES (#{authVal}, #{menuNmChk}, #{readYn}, #{writeYn})
+	]]>
+	</insert>
+
+</mapper>

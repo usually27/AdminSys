@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="admin.menu.service.AuthInfoMapper">
+
+	<select id="authInfoList" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		SELECT ROLE_ID,
+					ROLE_NM,
+					ROLE_DESC,
+					DECODE(USE_FLAG, 'Y', '사용', 'N', '미사용') AS USE_FLAG
+		FROM   MENU_ROLE
+		WHERE ROLE_ID LIKE 'R%'
+		ORDER BY ROLE_ID
+	]]>
+	</select>
+
+	<insert id="authInfoInsert" parameterType="map">
+	<![CDATA[
+		INSERT INTO MENU_ROLE( ROLE_ID, ROLE_NM, SYSTEM_CD, ROLE_DESC, USE_FLAG )
+		VALUES( (SELECT 'R' || LPAD((SELECT MAX(SUBSTR(ROLE_ID,2,4)) + 1 FROM MENU_ROLE WHERE ROLE_ID LIKE 'R%'), 4,'0' ) FROM DUAL), #{roleNm}, 'S0001', #{roleDesc}, #{useFlag} )
+	]]>
+	</insert>
+
+	<update id="authInfoUpdate" parameterType="map">
+	<![CDATA[
+		UPDATE MENU_ROLE
+		SET ROLE_NM = #{roleNm},
+			   ROLE_DESC = #{roleDesc},
+			   USE_FLAG = #{useFlag}
+		WHERE ROLE_ID = #{roleId}
+	]]>
+	</update>
+
+	<delete id="authDelete" parameterType="map">
+	<![CDATA[
+		DELETE FROM MENU_ROLE
+		WHERE ROLE_ID = #{roleId}
+	]]>
+	</delete>
+
+</mapper>

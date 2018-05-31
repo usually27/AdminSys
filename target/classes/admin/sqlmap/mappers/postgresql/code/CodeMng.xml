@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="admin.code.service.CodeMngMapper">
+
+	<!-- [시스템관리 -> 코드관리 -> 목록] -->
+	<select id="selectInfoList" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		SELECT TEMP.*,
+		       LAST_VALUE(NUM) OVER() AS TOTALROWS
+		FROM   (SELECT ( ROW_NUMBER() OVER() ) AS NUM,
+		               TEMP.*
+		        FROM   (SELECT TRIM(CODE_NUM) CODE_NUM,
+		                       TRIM(CODE_EXP) CODE_EXP,
+		                       TRIM(CODE_ID) CODE_ID,
+		                       TRIM(CODE_VAL) CODE_VAL,
+		                       TRIM(CODE_USE) CODE_USE,
+		                       TRIM(USE_RD) USE_RD,
+		                       TRIM(USE_WT) USE_WT,
+		                       TRIM(USE_SW) USE_SW
+		                FROM   CMT_CODE_MA
+	]]>
+	<where>
+		<if test='codeExp != null and codeExp != ""'>
+			<![CDATA[ AND CODE_EXP LIKE '%' || #{codeExp}|| '%' ]]>
+		</if>
+		<if test='codeVal != null and codeVal != ""'>
+			<![CDATA[ AND CODE_VAL LIKE '%' || #{codeVal}|| '%' ]]>
+		</if>
+		<if test='codeNum != null and codeNum != ""'>
+			<![CDATA[ AND CODE_NUM LIKE '%' || #{codeNum}|| '%' ]]>
+		</if>
+	</where>
+	<![CDATA[
+		                ORDER BY CODE_NUM DESC, CODE_VAL
+		                )TEMP)TEMP LIMIT #{rows} OFFSET #{rows} * ( #{page} - 1 )
+	]]>
+	</select>
+
+	<!-- [시스템관리 -> 코드관리 -> 상세조회] -->
+	<select id="selectInfo" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		SELECT TRIM(CODE_NUM) CODE_NUM,
+               TRIM(CODE_EXP) CODE_EXP,
+               TRIM(CODE_ID) CODE_ID,
+               TRIM(CODE_VAL) CODE_VAL,
+               TRIM(CODE_USE) CODE_USE,
+               TRIM(USE_RD) USE_RD,
+               TRIM(USE_WT) USE_WT,
+               TRIM(USE_SW) USE_SW
+		FROM   CMT_CODE_MA
+		WHERE  CODE_ID = #{codeId} AND CODE_NUM = #{codeNum}
+	]]>
+	</select>
+
+	<!-- [시스템관리 -> 코드관리 -> 추가] -->
+	<insert id="insertInfo" parameterType="map">
+	<![CDATA[
+		INSERT INTO PUBLIC.CMT_CODE_MA
+		            (CODE_NUM,
+		               CODE_EXP,
+		               CODE_ID,
+		               CODE_VAL,
+		               CODE_USE,
+		               USE_RD,
+		               USE_WT,
+		               USE_SW)
+		VALUES      ( #{codeNum},
+		              #{codeExp},
+		              #{codeId},
+		              #{codeVal},
+		              #{codeUse},
+		              #{useRd},
+		              #{useWt},
+		              #{useSw} );
+	]]>
+	</insert>
+
+	<!-- [시스템관리 -> 코드관리 -> 수정] -->
+	<update id="updateInfo" parameterType="map">
+	<![CDATA[
+		UPDATE PUBLIC.CMT_CODE_MA
+		SET    CODE_EXP = #{codeExp},
+		       CODE_VAL = #{codeVal},
+		       CODE_USE = #{codeUse},
+		       USE_RD = #{useRd},
+		       USE_WT = #{useWt},
+		       USE_SW = #{useSw}
+		WHERE  CODE_ID = #{codeId} AND CODE_NUM = #{codeNum};
+	]]>
+	</update>
+
+	<!-- [시스템관리 -> 코드관리 -> 삭제] -->
+	<delete id="deleteInfo" parameterType="map">
+	<![CDATA[
+		DELETE FROM CMT_CODE_MA
+		WHERE  CODE_ID = #{codeId} AND CODE_NUM = #{codeNum}
+	]]>
+	</delete>
+
+</mapper>

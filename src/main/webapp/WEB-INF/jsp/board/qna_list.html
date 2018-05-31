@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+
+<title>공간정보통합관리시스템</title>
+<link rel="stylesheet" href="./../resource/css/base.css" type="text/css">
+<link rel="stylesheet" href="./../resource/css/ui_style.css" type="text/css">
+<link rel="stylesheet" href="./../resource/css/ui.jqgrid.css" type="text/css"><!-- Plug-in -->
+<link rel="stylesheet" href="./../resource/css/common.css" type="text/css">
+<link rel="stylesheet" href="./../resource/css/layout.css" type="text/css">
+<link rel="stylesheet" href="./../resource/css/content.css" type="text/css">
+
+<script type="text/javascript" src="./../resource/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="./../resource/js/jquery-ui-1.12.1.min.js"></script>
+<script type="text/javascript" src="./../resource/js/jquery.jqGrid.min.js"></script><!-- Plug-in -->
+<script type="text/javascript" src="./../resource/js/common-ui.js"></script>
+<script type="text/javascript">
+<!--
+jQuery(document).ready(function(e) {
+	setSnb(1);	
+});
+//-->
+</script>
+</head>
+
+<body>
+<div id="wrap">
+	<!-- Header Wrap -->
+	<div id="header_wrap">
+		<!-- Header -->
+		<div id="header">
+			<div class="logo_header">
+				<a href="#" class="logo"><img src="./../images/common/logo_header.png" alt="광주광역시"></a>
+				<span class="name">공간정보통합관리시스템</span>
+			</div>
+			<div class="loginInfo">
+				<span class="time">2012-08-08 13:50:25</span>
+				<span class="user"><span>OOO</span>님 안녕하세요</span>
+				<a href="./../login.html" class="btn sml gray"><span>로그아웃</span></a>
+			</div>
+		</div>
+		<!--// Header -->
+	</div>
+	<!--// Header Wrap -->
+	<hr>
+	
+	<!-- Container -->
+	<div class="bg_container_wrap">
+		<div class="bg_container">
+			<div class="bg_snb"></div>
+		</div>
+	</div>
+	<div id="container">
+		<!-- Aside -->
+		<div id="snb">
+			<div class="snb_wrap">
+				<ul class="snb">
+					<li class="node1">
+						<a href="./../member/member_list.html" class="depth1"><span>회원 관리</span></a>
+					</li>
+					<li class="node1 sub">
+						<a href="#" class="depth1"><span>게시판관리</span><i class="arrow">닫힘</i></a>
+						<div class="submenu_wrap">
+							<ul>
+								<li><a href="./../board/notice_list.html"><span>공지사항 관리</span></a></li>
+								<li><a href="./../board/download_list.html"><span>자료실 관리</span></a></li>
+								<li><a href="./../board/qna_list.html"><span>질의응답 관리</span></a></li>
+								<li><a href="./../board/magazine_list.html"><span>매거진 관리</span></a></li>
+							</ul>
+						</div>
+					</li>
+					<li class="node1 sub">
+						<a href="#" class="depth1"><span>메뉴 관리</span><i class="arrow">닫힘</i></a>
+						<div class="submenu_wrap">
+							<ul>
+								<li><a href="./../menu/program_list.html"><span>프로그램 관리</span></a></li>
+								<li><a href="./../menu/menu_list.html"><span>메뉴 관리</span></a></li>
+								<li><a href="./../menu/auth_list.html"><span>권한 관리</span></a></li>
+								<li><a href="./../menu/menuAuth_list.html"><span>메뉴 권한 관리</span></a></li>
+								<li><a href="./../menu/code_list.html"><span>공통코드 관리</span></a></li>
+							</ul>
+						</div>
+					</li>
+					<li class="node1 sub">
+						<a href="#" class="depth1"><span>로그 관리</span><i class="arrow">닫힘</i></a>
+						<div class="submenu_wrap">
+							<ul>
+								<li><a href="./../log/visit_list.html"><span>방문자 접속통계</span></a></li>
+								<li><a href="./../log/user_list.html"><span>사용자 접속통계</span></a></li>
+								<li><a href="./../log/logIn_list.html"><span>로그인 이력</span></a></li>
+								<li><a href="./../log/mapLog_list.html"><span>지도 로그</span></a></li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<!--// Aside -->
+		<hr>
+		
+		<!-- Contents -->
+		<div id="content">
+			<!-- Content Header -->
+			<div class="content_header">
+				<!-- Breadcrumb -->
+				<ul class="breadcrumb">
+					<li><a href="/">관리자</a></li>
+					<li><a href="./notice_list.html">게시판 관리</a></li>
+					<li class="active">질의응답 관리</li>
+				</ul>
+				<!--// Breadcrumb -->
+				
+				<h1 class="currentPage">질의응답 관리</h1>
+			</div>
+			<!--// Content Header -->
+			
+			<!-- Content body -->
+			<div class="content_body">
+			
+				<!-- Board Search -->
+				<form name="SearchFrm" id="SearchFrm" method="post" onSubmit="">
+				
+
+				</form>
+				<!--// Board Search -->
+				
+				<!-- Board List -->
+				<div class="section">
+					
+					</div>
+
+					<!-- Board Pager -->
+					<div class="boardPage_wrap">
+						<div class="boardPage">
+							<a href="#" onclick=""><img src="./../images/common/ico_pager_first.png" alt=""></a>
+							<a href="#" onclick=""><img src="./../images/common/ico_pager_prev.png" alt=""></a>
+							<strong>1</strong>
+							<a href="#" onclick="">2</a>
+							<a href="#" onclick="">3</a>
+							<a href="#" onclick="">4</a>
+							<a href="#" onclick="">5</a>
+							<a href="#" onclick="">6</a>
+							<a href="#" onclick="">7</a>
+							<a href="#" onclick="">8</a>
+							<a href="#" onclick="">9</a>
+							<a href="#" onclick="">10</a>
+							<a href="#" onclick=""><img src="./../images/common/ico_pager_next.png" alt=""></a>
+							<a href="#" onclick=""><img src="./../images/common/ico_pager_last.png" alt=""></a>
+						</div>
+					</div>
+					<!--// Board Pager -->
+				</div>
+				<!--// Board List -->							
+				
+			</div>
+			<!--// Content body -->
+		</div>		
+		<!--// Content -->
+	</div>	
+	<!--// Container -->
+	<hr>
+	
+	<!-- Footer Wrap -->
+	<div id="footer_wrap">	
+		<!-- Footer -->
+		<div id="footer">
+			<div class="copyright">Copyright © <script>document.write((new Date()).getFullYear());</script> 광주광역시 All rights reserved.</div>
+		</div>
+		<!--// Footer -->
+	</div>
+	<!--// Footer Wrap -->
+
+	<!-- Common Layer Pop -->
+	<!-- (팝업) 회원정보수정 -->
+	<div class="lp_wrap lp_memberInfo lp_w600">
+		<!-- lp_inner -->
+		<div class="lp_inner">
+			<div class="lp_header">
+				<h1 class="ico ico_star">회원정보수정</h1>
+			</div>
+			<!-- lp_body -->
+			<div class="lp_body">
+				<div class="lp_box">
+					<div class="btn_wrap r">
+						<button type="button" class="btn mid blue">승인</buttion>
+						<button type="button" class="btn mid blue">승인보류</buttion>
+						<button type="button" class="btn mid blue">삭제</buttion>
+						<button type="button" class="btn mid black">저장</buttion>
+						<button type="button" class="btn mid black">취소</buttion>
+					</div>
+					<!-- section -->
+					<div class="section">
+						<div class="hgroup_wrap">
+							<h2>아이디 정보</h2>
+						</div>
+						<div class="table_wrap">
+							<div class="board_info">
+								<div class="board_right">
+									<p class="txt_guide">등록시 <span class="ico_ess">표시는 필수 입력사항입니다.</span></p>
+								</div>
+							</div>
+							<table class="board_view">
+								<colgroup>
+									<col width="140">
+									<col>
+								</colgroup>
+								<tbody>
+									<tr>
+										<th><label>사용자 아이디</label></th>
+										<td><input type="text" class="" value=""></td>
+									</tr>
+									<tr>
+										<th><label class="est">비밀번호</label></th>
+										<td>
+											<input type="password" id="" name="" maxlength="16" class="">
+											<p class="txt_guide">비밀번호를 <button type="button" class="btn sml blue">메일로 보내기</button> 또는 <em class="red">"rxgmasr78*"</em>로 <button type="button" class="btn sml blue">초기화</button></p>
+										</td>
+									</tr>
+									<tr>
+										<th><label class="est">이메일</label></th>
+										<td>
+											<input type="password" id="" name="" maxlength="16" class="">
+											<p class="txt_guide">비밀번호 찾기에 반드시 필요하며 등록된 메일로 비밀번호 발송근무지에서<br>
+											확인 가능한 korea.kr메일을 입력하시기 바랍니다.</p>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<!--//section -->
+				</div>
+			</div>
+			<!-- //lp_body -->
+			<a href="#this" class="lp_close" onclick="javascript:lp_close('.lp_memberInfo'); return;"></a>
+		</div>
+		<!-- //lp_inner -->
+	</div>
+	<!--//(팝업) 회원정보수정 -->
+	
+	<!--//Common Layer Pop -->
+
+</div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="admin.menu.service.ProgMgrMapper">
+
+	<select id="progList" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		SELECT *
+		FROM	PROG_INFO
+		ORDER BY PROG_ID
+	]]>
+	</select>
+
+	<insert id="insertProg" parameterType="map" >
+	<![CDATA[
+		INSERT INTO PROG_INFO(PROG_ID, PROG_NM, PROG_DESC, SYSTEM_CD, PROG_PATH, POPUP_FLAG, WIDTH, HEIGHT, USE_FLAG)
+		VALUES ( (SELECT #{progGbNm} || LPAD( NVL( MAX(SUBSTR(prog_id, LENGTH( #{progGbNm} )+1,2)), 0) +1, 2, '0') FROM PROG_INFO WHERE PROG_ID LIKE #{progGbNm} || '%') ,
+		#{progNm} , #{progNm}, 'S0001', #{progPath}, 'Y', 1024, 768, 'Y' )
+	]]>
+	</insert>
+
+	<update id="updateProg" parameterType="map" >
+	<![CDATA[
+		UPDATE PROG_INFO
+		SET	PROG_NM = #{progNm},
+				PROG_PATH = #{progPath} ,
+				POPUP_FLAG = 'N',
+				USE_FLAG = 'Y'
+		WHERE PROG_ID = #{progId}
+	]]>
+	</update>
+
+	<update id="updateProgMenu" parameterType="map" >
+	<![CDATA[
+		UPDATE MENU_INFORMATION
+		SET MENU_URL = #{progPath}
+		WHERE PROG_ID = #{progId}
+	]]>
+	</update>
+
+	<delete id="deleteProg" parameterType="map" >
+	<![CDATA[
+		DELETE FROM PROG_INFO
+		WHERE PROG_ID = #{progId}
+		]]>
+	</delete>
+
+	<select id="progSearchList" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		SELECT *
+		FROM	PROG_INFO
+		WHERE 1=1
+	]]>
+	<if test="progGb != NULL and progGb != ''">
+		AND PROG_ID LIKE #{progGb} || '%'
+	</if>
+	<if test="progGbNm != NULL and progGbNm != ''">
+		AND PROG_NM LIKE '%' || #{progGbNm} || '%'
+	</if>
+	<![CDATA[
+		 ORDER BY PROG_ID
+	]]>
+	</select>
+
+</mapper>

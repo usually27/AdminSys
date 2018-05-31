@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="admin.member.service.MemberInfoMapper">
+
+	<select id="memberInfoList" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		SELECT *
+		FROM (
+					SELECT *
+					FROM (
+								SELECT ROW_NUMBER() OVER(ORDER BY MEM_NO) AS NUM,
+											TEMP.*
+								FROM (
+											SELECT A.MEM_NO,
+														A.ROLE_ID,
+														(SELECT ROLE_NM FROM MENU_ROLE WHERE ROLE_ID = A.ROLE_ID) AS ROLE_NM,
+														A.USER_ID AS ID,
+														A.USER_ID,
+														A.USER_NAME,
+														A.GBN_L,
+														A.GBN_M,
+														A.GBN_S,
+														A.USER_TEL,
+														DECODE(A.APR_STATE, 'D', '삭제요청', 'N', '승인요청', 'Y', '사용가능', 'R', '승인보류', 'S', '차단') AS APR_STATE,
+														TO_CHAR (A.LAST_CONN, 'YYYY.MM.DD HH24:MI:SS') AS LAST_CONN,
+														TO_CHAR (A.JOIN_DATE, 'YYYY.MM.DD') AS JOIN_DATE
+											FROM   MEMBER_MASTER A
+											WHERE 1 = 1
+	]]>
+
+	<if test="auth != 'all'">
+				AND A.ROLE_ID = #{auth}
+	</if>
+	<if test="aprState != 'all'">
+				AND A.APR_STATE = #{aprState}
+	</if>
+	<if test="name != ''">
+				AND (USER_NAME LIKE '%' || #{name} || '%' OR USER_ID LIKE '%' || #{name} || '%')
+	</if>
+	<if test="orgName != 'all' and orgName != null">
+				AND (gbn_l LIKE '%' || #{orgName} || '%')
+	</if>
+	<if test="conWord1 != '' and conWord2 !=''">
+				AND A.USER_NAME BETWEEN #{conWord1} AND #{conWord2}
+	</if>
+
+	<![CDATA[
+						) TEMP
+				)TEMP
+		)TEMP
+		WHERE NUM BETWEEN #{limit} + 1 AND #{limit} + #{rows}
+	]]>
+	</select>
+
+	<select id="memberCnt" parameterType="map" resultType="int">
+		<![CDATA[
+		SELECT COUNT(*)
+		FROM (
+					SELECT *
+					FROM (
+								SELECT ROW_NUMBER() OVER(ORDER BY MEM_NO) AS NUM,
+											TEMP.*
+								FROM (
+											SELECT A.MEM_NO,
+														A.ROLE_ID,
+														(SELECT ROLE_NM FROM MENU_ROLE WHERE ROLE_ID = A.ROLE_ID) AS ROLE_NM,
+														A.USER_ID AS ID,
+														A.USER_ID,
+														A.USER_NAME,
+														A.GBN_L,
+														A.GBN_M,
+														A.GBN_S,
+														A.USER_TEL,
+														DECODE(A.APR_STATE, 'D', '삭제요청', 'N', '승인요청', 'Y', '사용가능', 'R', '승인보류', 'S', '차단') AS APR_STATE,
+														TO_CHAR (A.LAST_CONN, 'YYYY.MM.DD HH24:MI:SS') AS LAST_CONN,
+														TO_CHAR (A.JOIN_DATE, 'YYYY.MM.DD') AS JOIN_DATE
+											FROM   MEMBER_MASTER A
+											WHERE 1 = 1
+	]]>
+
+	<if test="auth != 'all'">
+				AND A.ROLE_ID = #{auth}
+	</if>
+	<if test="aprState != 'all'">
+				AND A.APR_STATE = #{aprState}
+	</if>
+	<if test="name != ''">
+				AND (USER_NAME LIKE '%' || #{name} || '%' OR USER_ID LIKE '%' || #{name} || '%')
+	</if>
+	<if test="conWord1 != '' and conWord2 !=''">
+				AND A.USER_NAME BETWEEN #{conWord1} AND #{conWord2}
+	</if>
+
+	<![CDATA[
+						) TEMP
+				)TEMP
+		)TEMP
+	]]>
+	</select>
+
+	<update id="memberBlock" parameterType="String">
+	<![CDATA[
+		UPDATE MEMBER_MASTER
+		SET APR_STATE= #{flag},
+			  MISSCNT = 0
+		WHERE USER_ID = #{userId}
+	]]>
+	</update>
+
+	<select id="memberInfoRegIdchk" parameterType="map" resultType="int">
+	<![CDATA[
+		SELECT COUNT(*)
+		FROM MEMBER_MASTER
+		WHERE USER_ID = #{userId}
+	]]>
+	</select>
+
+	<insert id="memberInfoInsert" parameterType="map">
+	<![CDATA[
+		INSERT INTO MEMBER_MASTER (MEM_NO, USER_ID, USER_PWD, USER_NAME, USER_TEL,GBN_L,GBN_M,GBN_S, ORG_NAME, USER_CLASS, APR_STATE, ROLE_ID, JOIN_DATE, LAST_CONN, MISSCNT, USER_IP)
+		VALUES(MEM_NO.NEXTVAL, #{userId}, #{userPwd}, #{userName}, #{userTel},#{gbnL},#{gbnM},#{gbnS}, #{orgName}, #{userClass}, #{insertCase}, #{roleId}, SYSDATE, SYSDATE, 0, #{userIp})
+	]]>
+	</insert>
+
+	<select id="getMemberDetail" parameterType="String" resultType="egovMap">
+	<![CDATA[
+		SELECT *
+		FROM	MEMBER_MASTER
+		WHERE USER_ID = #{userId}
+	]]>
+	</select>
+
+	<update id="memberInfoPwdInit" parameterType="map">
+	<![CDATA[
+		UPDATE MEMBER_MASTER
+		SET USER_PWD = #{userPwd},
+		APR_STATE = 'A'
+		WHERE USER_ID = #{userId}
+	]]>
+	</update>
+
+	<update id="memberInfoBlock" parameterType="map">
+	<![CDATA[
+		UPDATE MEMBER_MASTER
+		SET APR_STATE = 'S'
+		WHERE USER_ID = #{userId}
+	]]>
+	</update>
+
+	<delete id="memberInfoDelete" parameterType="map">
+	<![CDATA[
+		DELETE FROM MEMBER_MASTER
+		WHERE USER_ID = #{userId}
+	]]>
+	</delete>
+
+	<update id="memberInfoApproval" parameterType="map">
+	<![CDATA[
+		UPDATE MEMBER_MASTER
+		SET APR_STATE = 'Y'
+		WHERE USER_ID = #{userId}
+	]]>
+	</update>
+
+	<update id="memberInfoDefer" parameterType="map">
+	<![CDATA[
+		UPDATE MEMBER_MASTER
+		SET APR_STATE = 'R'
+		WHERE USER_ID = #{userId}
+	]]>
+	</update>
+
+	<update id="memberInfoModifyMgr" parameterType="map">
+	<![CDATA[
+		UPDATE MEMBER_MASTER
+		SET
+	]]>
+	<if test='userPwd != ""'>
+		<![CDATA[ 	USER_PWD = #{userPwd}, ]]>
+	</if>
+	<![CDATA[
+		USER_NAME = #{userName},
+		ORG_NAME = #{orgName},
+		USER_CLASS= #{userClass},
+		USER_TEL = #{userTel},
+		GBN_L = #{gbnL},
+		GBN_M = #{gbnM},
+		GBN_S = #{gbnS},
+		ROLE_ID = #{roleId}
+		WHERE USER_ID = #{userId}
+	]]>
+	</update>
+
+	<select id="menuAuthList" parameterType="map" resultType="egovMap">
+	<![CDATA[
+ WITH PROG_LIST
+			AS (
+			    SELECT PROG_ID, PROG_NM, PROG_PATH
+			    FROM PROG_INFO
+			)
+			SELECT
+			    T.MENU_ID
+			    , T.PAR_MENU_ID
+			    , T.ORDER_NO
+			    , T.T_LVL as TREE_LEVEL
+			    , M.MENU_NM
+			    , M.PROG_ID
+			    , M.PROG_NM
+			    , DECODE( M.PROG_NM, '','', '[' || M.PROG_ID || ']' || M.PROG_NM ) AS PROG_NAME
+			    , M.PROG_PATH
+			    , M.USE_FLAG
+			    , M.MENU_LEVEL
+			    , DECODE( M.MENU_LEVEL, 3, DECODE(M.USE_FLAG, 'Y', '사용', 'N', '미사용'), '' ) AS USE_FLAG_YN
+			    , (SELECT T.PAR_MENU_ID FROM MENU_INFORMATION T WHERE T.MENU_ID = M.PAR_MENU_ID ) AS TOP_MENU_ID
+			    , (SELECT COUNT(MENU_ID) FROM MENU_INFORMATION T WHERE T.PAR_MENU_ID = M.MENU_ID ) AS CHILD_COUNT
+			    , (SELECT T.MENU_LEVEL FROM MENU_INFORMATION T WHERE T.MENU_ID = M.PAR_MENU_ID ) AS PAR_MENU_LEVEL
+			    , (SELECT T.MENU_NM FROM MENU_INFORMATION T WHERE T.MENU_ID = M.PAR_MENU_ID ) AS PAR_MENU_NM
+			    , T.IS_LEAF
+			    , M.MENU_ORDER_NO
+	            ,P.MENU_ID AS M_N_1
+	            ,Q.MENU_ID AS M_N_2
+	            ,(CASE WHEN P.MENU_ID IS NOT NULL AND Q.MENU_ID IS NULL THEN 'TRUE'
+	                   ELSE 'FALSE'
+	               END) AS MAPPING_MENU_ID
+			FROM
+			(
+			    SELECT
+			        MENU_ID
+			        , MENU_NM
+			        , NVL((SELECT P.PROG_ID FROM PROG_LIST P WHERE P.PROG_ID = I.PROG_ID), '') AS PROG_ID
+			        , NVL((SELECT P.PROG_NM FROM PROG_LIST P WHERE P.PROG_ID = I.PROG_ID), '') AS PROG_NM
+			        , NVL((SELECT P.PROG_PATH FROM PROG_LIST P WHERE P.PROG_ID = I.PROG_ID), '') AS PROG_PATH
+			        , USE_FLAG
+			        , MENU_LEVEL
+			        , PAR_MENU_ID
+			        , MENU_ORDER_NO
+			    FROM
+			        MENU_INFORMATION I
+			) M,
+			(
+			    SELECT ROWNUM TR, A.* FROM (
+			       SELECT MENU_ID, LEVEL AS T_LVL, PAR_MENU_ID, ORDER_NO,
+			              DECODE((SELECT DISTINCT '1'
+			                 FROM MENU_INFORMATION
+			                START WITH PAR_MENU_ID = MT.MENU_ID
+			                CONNECT BY PRIOR MENU_ID = PAR_MENU_ID),NULL,'true','false') AS IS_LEAF
+			         FROM MENU_INFORMATION MT
+			        START WITH PAR_MENU_ID = '0'
+			      CONNECT BY PRIOR MENU_ID = PAR_MENU_ID
+			        ORDER SIBLINGS BY ORDER_NO
+			    ) A
+			) T,
+	        (
+	            SELECT ROLE_ID,MENU_ID
+	              FROM MENU_MAPPING
+	             WHERE ROLE_ID = #{roleId}
+	            UNION
+	            SELECT #{roleId} AS ROLE_ID,MENU_ID
+	              FROM MENU_MEMBER_MAPPING
+	             WHERE MEMBER_ID = #{userId}
+	               AND USE_YN = 'Y'
+	        ) P,
+	        (
+	            SELECT #{roleId} AS ROLE_ID,MENU_ID
+	              FROM MENU_MEMBER_MAPPING
+	             WHERE MEMBER_ID = #{userId}
+	               AND USE_YN = 'N'
+	        ) Q
+			WHERE M.MENU_ID = T.MENU_ID
+			  AND T.MENU_ID = P.MENU_ID(+)
+	          AND T.MENU_ID = Q.MENU_ID(+)
+			ORDER BY T.TR
+	]]>
+	</select>
+
+	<!-- [사용자 메뉴 권한 삭제]  -->
+	<delete id="memberAuthSaveDel" parameterType="String" >
+		<![CDATA[
+			DELETE MENU_MEMBER_MAPPING
+			WHERE MEMBER_ID = #{userId}
+		]]>
+	</delete>
+
+	<select id="menuMappingList" parameterType="String" resultType="egovMap">
+	<![CDATA[
+		SELECT MENU_ID
+		FROM MENU_MAPPING
+		WHERE ROLE_ID = #{roleId}
+	]]>
+	</select>
+
+	<!-- [사용자 메뉴 권한 등록]  -->
+	<insert id="memberAuthSaveIst" parameterType="String">
+		<![CDATA[
+		INSERT INTO MENU_MEMBER_MAPPING (MEMBER_ID, MENU_ID, USE_YN)
+		VALUES (#{userId}, #{mappingIdVal}, #{useYn})
+		]]>
+	</insert>
+
+	<select id="layerMemAuthList" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		WITH LAYER_LIST
+			AS (
+					SELECT LAYER_ID, LAYER_NM, LAYER_PATH, TABLE_NM
+					FROM LAYER_INFO
+			)
+			SELECT T.MENU_ID,
+			T.PAR_MENU_ID,
+			T.ORDER_NO,
+			T.T_LVL as TREE_LEVEL,
+			M.MENU_NM,
+			M.LAYER_ID,
+			M.LAYER_NM,
+			DECODE( M.TABLE_NM, '','', '[' || M.TABLE_NM || ']' || M.LAYER_NM ) AS LAYER_NAME,
+			M.LAYER_PATH,
+			M.TABLE_NM,
+			M.USE_FLAG,
+			M.MENU_LEVEL,
+			DECODE( M.MENU_LEVEL, 3, DECODE(M.USE_FLAG, 'Y', '사용', 'N', '미사용'), '' ) AS USE_FLAG_YN,
+			(SELECT T.PAR_MENU_ID FROM LAYER_INFORMATION T WHERE T.MENU_ID = M.PAR_MENU_ID ) AS TOP_MENU_ID,
+			(SELECT COUNT(MENU_ID) FROM LAYER_INFORMATION T WHERE T.PAR_MENU_ID = M.MENU_ID ) AS CHILD_COUNT,
+			(SELECT T.MENU_LEVEL FROM LAYER_INFORMATION T WHERE T.MENU_ID = M.PAR_MENU_ID ) AS PAR_MENU_LEVEL,
+			(SELECT T.MENU_NM FROM LAYER_INFORMATION T WHERE T.MENU_ID = M.PAR_MENU_ID ) AS PAR_MENU_NM,
+			T.IS_LEAF,
+			M.MENU_ORDER_NO,
+			P.LAYER_ID AS M_N_1,
+			Q.LAYER_ID AS M_N_2,
+			S.LAYER_ID AS M_N_3,
+			W.LAYER_ID AS M_N_4,
+			CASE WHEN P.LAYER_ID IS NULL THEN 'FALSE' ELSE 'TRUE' END AS MAPPING_MENU_ID,
+			(CASE
+				WHEN P.LAYER_ID IS NOT NULL AND Q.LAYER_ID is NULL THEN 'TRUE'
+				ELSE 'FALSE'
+			 END) AS READ_AUTH,
+			(CASE
+				WHEN S.LAYER_ID IS NOT NULL AND W.LAYER_ID IS NULL THEN 'TRUE'
+				ELSE 'FALSE'
+			 END) AS WRITE_AUTH
+			FROM
+			(
+				SELECT MENU_ID,
+							MENU_NM,
+							NVL((SELECT P.LAYER_ID FROM LAYER_LIST P WHERE P.LAYER_ID = I.LAYER_ID), '') AS LAYER_ID,
+							NVL((SELECT P.LAYER_NM FROM LAYER_LIST P WHERE P.LAYER_ID = I.LAYER_ID), '') AS LAYER_NM,
+							NVL((SELECT P.TABLE_NM FROM LAYER_LIST P WHERE P.LAYER_ID = I.LAYER_ID), '') AS TABLE_NM,
+							NVL((SELECT P.LAYER_PATH FROM LAYER_LIST P WHERE P.LAYER_ID = I.LAYER_ID), '') AS LAYER_PATH,
+							USE_FLAG,
+							MENU_LEVEL,
+							PAR_MENU_ID,
+							MENU_ORDER_NO
+				FROM	LAYER_INFORMATION I
+			) M,
+			(
+				SELECT ROWNUM TR, A.*
+				FROM (
+							SELECT MENU_ID,
+										LEVEL AS T_LVL,
+										PAR_MENU_ID,
+										ORDER_NO,
+										DECODE((SELECT DISTINCT '1' FROM LAYER_INFORMATION START WITH PAR_MENU_ID = MT.MENU_ID CONNECT BY PRIOR MENU_ID = PAR_MENU_ID),NULL,'true','false') AS IS_LEAF
+							FROM LAYER_INFORMATION MT
+							START WITH PAR_MENU_ID = '0'
+							CONNECT BY PRIOR MENU_ID = PAR_MENU_ID
+							ORDER SIBLINGS BY ORDER_NO
+				) A
+			) T,
+			(
+				SELECT ROLE_ID, LAYER_ID
+				FROM LAYER_MAPPING
+				WHERE ROLE_ID = #{roleId}
+				UNION
+				SELECT #{roleId} AS ROLE_ID, LAYER_ID
+				FROM LAYER_MEMBER_MAPPING
+				WHERE MEMBER_ID = #{userId}
+				AND READ = 'Y'
+			) P,
+			(
+				SELECT #{roleId} AS ROLE_ID, LAYER_ID
+				FROM LAYER_MEMBER_MAPPING
+				WHERE MEMBER_ID = #{userId}
+				AND READ = 'N'
+			) Q,
+			(
+				SELECT ROLE_ID, LAYER_ID
+				FROM LAYER_MAPPING
+				WHERE ROLE_ID = #{roleId}
+				UNION
+				SELECT #{roleId} AS ROLE_ID, LAYER_ID
+				FROM LAYER_MEMBER_MAPPING
+				WHERE MEMBER_ID = #{userId}
+				AND WRITE = 'Y'
+			) S,
+			(
+				SELECT #{roleId} AS ROLE_ID, LAYER_ID
+				FROM LAYER_MEMBER_MAPPING
+				WHERE MEMBER_ID = #{userId}
+				AND WRITE = 'N'
+			) W
+			WHERE M.MENU_ID = T.MENU_ID
+			AND T.MENU_ID = P.LAYER_ID(+)
+			AND T.MENU_ID = Q.LAYER_ID(+)
+			AND T.MENU_ID = S.LAYER_ID(+)
+			AND T.MENU_ID = W.LAYER_ID(+)
+			ORDER BY T.TR
+	]]>
+	</select>
+
+	<delete id="layerMemAuthSaveDel" parameterType="String">
+	<![CDATA[
+		DELETE LAYER_MEMBER_MAPPING
+		WHERE MEMBER_ID = #{userId}
+	]]>
+	</delete>
+
+	<select id="layerMappingList" parameterType="String" resultType="egovMap">
+	<![CDATA[
+		SELECT LAYER_ID, READ, WRITE
+		FROM LAYER_MAPPING
+		WHERE ROLE_ID = #{authVal}
+	]]>
+	</select>
+
+	<insert id="layerMemAuthSave" parameterType="String">
+	<![CDATA[
+		INSERT INTO LAYER_MEMBER_MAPPING (MEMBER_ID, LAYER_ID, READ, WRITE)
+		VALUES (#{userId}, #{layerId}, #{readYn}, #{writeYn} )
+	]]>
+	</insert>
+
+	<select id="selectInfoList" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		SELECT TOTALROWS, ROWNUM, USER_ID, TO_CHAR(TIMES, 'YYYY-MM-DD-HH24MI') AS TIMES, IP, GUBUN, URL
+		FROM (
+											SELECT TO_CHAR(LAST_VALUE(ROWNUM)
+						OVER (ORDER BY ROWNUM ROWS BETWEEN CURRENT
+						ROW AND UNBOUNDED FOLLOWING)) AS TOTALROWS
+						,ROW_NUMBER() OVER(ORDER BY NUM) AS RNUM,USER_ID, NUM, TIMES, IP, GUBUN, URL FROM   SYS_LOG
+											WHERE 1 = 1
+	]]>
+
+	<if test="userId != null and userId != ''">
+				AND USER_ID LIKE '%'||#{userId}||'%'
+	</if>
+	<if test="gubun != null and gubun != ''">
+				AND GUBUN = #{gubun}
+	</if>
+
+	<![CDATA[
+		)TEMP
+		WHERE RNUM BETWEEN #{limit} + 1 AND #{limit} + #{rows}
+	]]>
+	</select>
+
+	<select id="logStatsList" parameterType="map" resultType="egovMap">
+	<![CDATA[
+		SELECT *
+		FROM (
+			SELECT SUBSTR(DAYS, 1, 4) AS YEARS,
+				   SUM(URL_CNT) OVER(PARTITION BY SUBSTR(DAYS, 1, 4)) AS Y_CNT,
+				   SUBSTR(DAYS, 5, 2) AS MONTHS,
+				   SUM(URL_CNT) OVER(PARTITION BY SUBSTR(DAYS, 1, 6)) AS M_CNT,
+				   SUBSTR(DAYS, 7, 2) AS DAYS,
+				   SUM(URL_CNT) OVER(PARTITION BY SUBSTR(DAYS, 1, 8)) AS D_CNT,
+				   DECODE(URL,
+						  'attrmw', '상수 민원',
+						  'attrms', '하수 민원',
+						  'attrmr', '도로 민원',
+						  'attrw', '상수 시설물',
+						  'attrs', '하수 시설물',
+						  'attrr', '도로 시설물',
+						  'attru', '지하 시설물',
+						  'attrrw', '상수 공사대장',
+						  'attrrs', '하수 공사대장',
+						  'attrrr', '도로 공사대장',
+						  'login', '로그인',
+						  'board', '게시판',
+						  'search', '지도 검색',
+						  'stat', '통계',
+						  '', '미지정'
+					) AS URL,
+				   URL_CNT
+			FROM   (SELECT TO_CHAR(TIMES, 'YYYYMMDD') AS DAYS,
+						   URL,
+						   COUNT(*) AS URL_CNT
+					FROM   SYS_LOG
+					GROUP BY URL, TO_CHAR(TIMES, 'YYYYMMDD') )
+	]]>
+
+	<if test="url != null and url != ''">
+				WHERE URL = #{url}
+	</if>
+
+	<![CDATA[
+        )
+        WHERE 1=1
+	]]>
+
+	<if test="years != null and years != ''">
+				AND YEARS = #{years}
+	</if>
+	<if test="months != null and months != ''">
+				AND MONTHS = #{months}
+	</if>
+	<if test="days != null and days != ''">
+				AND DAYS = #{days}
+	</if>
+
+	<![CDATA[
+		ORDER BY YEARS, MONTHS, DAYS, URL
+	]]>
+	</select>
+
+</mapper>

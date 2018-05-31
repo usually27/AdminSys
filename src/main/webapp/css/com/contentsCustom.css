@@ -1,0 +1,201 @@
+@charset "utf-8";
+
+/*------------------------------------------------------------------------------------------------------------------------------------------
+	File : Contents.CSS
+	Company : The Webstyle co.,ltd
+ 	Author : Jong Hoon, Park 2015-06
+ 	CSS 적용순서 : 아이디 > 태그와 클래스 > 클래스 > 태그
+	CSS 선택자 선언순서 : Type Selector, Layout Selector, Class Selector, Etc
+	CSS 속성 선언순서 : display, position, float/clear, overflow, width/height, margin/padding, border, background, color/font, align, etc
+--------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+/*------------------------------------------------------------------------------------------
+                                         * 공통 *
+-------------------------------------------------------------------------------------------*/
+
+
+.contBox_tp1 {margin-top:12px; padding:20px; background-color:#fff; border:1px solid #e1e1e1;}
+
+/* lineMap */
+.lineMap_wrap {position:absolute; right:0px; top:15px;}
+.lineMap_wrap .lineMap {overflow:hidden;}
+.lineMap_wrap .lineMap > li {float:left;}
+.lineMap_wrap .lineMap > li > a {display:block; height:26px; padding:0px 15px; background:url('../../images/common/arrow_limeMap.png') left center no-repeat; font-size:13px; color:#555; line-height:26px; cursor: default;}
+.lineMap_wrap .lineMap > li:first-child > a { padding-left:0px; background:none; }
+.lineMap_wrap .lineMap > li > a.ico_home {width:26px; margin-right:10px; background:url('../../images/common/ico_home_limeMap.png') left center no-repeat; text-indent:-9999em;}
+
+/* #상세검색 */
+.secrchBox {*zoom:1; position:relative;}
+.secrchBox.tp1 {padding:8px 22px; border:3px solid #2a9dc9; background-color:#fff;}
+.secrchBox .search_sec {overflow:hidden; width:100%; padding:12px 0px; border-bottom:1px solid #e1e1e1;}
+.secrchBox .search_sec .tit {
+	float:left;
+	width:100px;
+	padding-left:8px;
+	background:url('../../images/common/tit_tp1.png') left center no-repeat;
+	font-family:'NotoSansKR-Medium'; font-size:14px; color:#555;
+	line-height:32px;
+}
+.secrchBox .search_sec.tp1 .tit {width:18%;}
+.secrchBox .search_sec.tp1 .cont_wrap {float:left; width:82%;}
+
+.secrchBox .searchSec_wrap {*zoom:1; width:100%; padding:0 5px;}
+.secrchBox .searchSec_wrap:after {content:""; display:block; clear:both;}
+.secrchBox .searchSec_wrap.sec_2 .search_sec {float:left; width:50%;}
+
+.secrchBox .searchSec_wrap.sec_3 .search_sec {float:left; width:33.33333%;}
+.secrchBox .searchSec_wrap.sec_3 .search_sec .tit {width:20%;}
+.secrchBox .searchSec_wrap.sec_3 .search_sec .cont_wrap {width:80%;}
+
+/* 로그인 팝업 */
+.lp_login {}
+.lp_login .state_wrap {position:relative; margin-top:8px; font-size:13px; text-align:left;}
+.lp_login .btn_join {position:absolute; right:0px; top:0px; font-size:13px;}
+.lp_login .btn_login {display:block; width:100%; height:40px; margin-top:20px; background-color:#2a9dc9; line-height:40px; font-size:15px; color:#fff;}
+
+
+/*------------------------------------------------------------------------------------------
+                                         * 메인 *
+-------------------------------------------------------------------------------------------*/
+.mainVisual_wrap {position:relative; width:100%; height:592px; margin:0 auto; background:url('../../images/main/img_mainVisual_01.jpg') no-repeat;}
+/*.mainVisual_wrap {position:relative; width:1500px; height:592px; margin:0 auto; background:url('../../images/main/img_mainVisual_01.jpg') no-repeat;}*/
+
+/* 맵 영역 */
+.mainVisual_wrap .mapArea_wrap {position:absolute; left:50%; top:30px; width:524px; height:524px; margin-left:-272px; background:url('../../images/main/bg_one_big.png') no-repeat;}
+.mainVisual_wrap .mapArea_wrap .mapArea {width:525px; height:525px; background:url('../../images/main/img_map.png') no-repeat;}
+.mainVisual_wrap .mapArea_wrap .mapArea.at_1 {background-position:0 -563px;}
+.mainVisual_wrap .mapArea_wrap .mapArea.at_2 {background-position:0 -1126px;}
+.mainVisual_wrap .mapArea_wrap .mapArea.at_3 {background-position:0 -1689px;}
+.mainVisual_wrap .mapArea_wrap .mapArea.at_4 {background-position:0 -2252px;}
+.mainVisual_wrap .mapArea_wrap .mapArea.at_5 {background-position:0 -2815px;}
+.mainVisual_wrap .mapArea_wrap .mapArea > a {display:block; position:absolute; padding:8px 12px; font-family:'NotoSansKR-Medium'; font-size:16px;}
+.mainVisual_wrap .mapArea_wrap .mapArea > a.on {background-color:#fff; border:1px solid #e1e1e1; border-radius:4px; color:#555;/*  box-shadow:0px 0px 5px #fff; */}
+.mainVisual_wrap .mapArea_wrap .mapArea > a.on:after {
+	content:"";
+	display:block;
+	position:absolute; left:0px; top:30px;
+	width:34px; height:56px;
+	background:url('../../images/main/ico_location_white.png') no-repeat;
+	background-size:80%;
+}
+.mainVisual_wrap .mapArea_wrap .mapArea > a.mn_1 {left:345px; top:260px;}
+.mainVisual_wrap .mapArea_wrap .mapArea > a.mn_2 {left:298px; top:120px;}
+.mainVisual_wrap .mapArea_wrap .mapArea > a.mn_3 {left:180px; top:170px;}
+.mainVisual_wrap .mapArea_wrap .mapArea > a.mn_4 {left:182px; top:330px;}
+.mainVisual_wrap .mapArea_wrap .mapArea > a.mn_5 {left:265px; top:320px;}
+.mainVisual_wrap .mapArea_wrap .mapArea > a.mn_5.on:after {left:10px;}
+
+/* 로그인 */
+.login_wrap {position:absolute; right:20px; top:20px;}
+.login_wrap .loginBox {width:300px; padding:28px 18px; background:url('../../images/common/bg_yellow_80per.png') repeat;}
+.login_wrap .loginBox h2 {margin-bottom:15px; font-family:'NotoSansKR-Bold'; font-size:18px; color:#fff;}
+.login_wrap .loginBox .inp_wrap {margin-top:6px;}
+.login_wrap .loginBox .inp_wrap:first-child {margin-top:0px;}
+.login_wrap .loginBox .inp_wrap input[type="text"], input[type="password"] {width:100%;}
+.login_wrap .loginBox .state_wrap {position:relative; margin-top:6px;}
+.login_wrap .loginBox .state_wrap input[type="checkbox"] {}
+.login_wrap .loginBox .state_wrap label {font-size:13px; color:#fff;}
+.login_wrap .loginBox .state_wrap .btn_join {position:absolute; right:0px; top:5px; font-size:13px; color:#fff;}
+.login_wrap .btn_login {float:right; display:block; width:49%; height:40px; margin-top:18px; background-color:#fff; font-family:'NotoSansKR-Medium'; font-size:15px; color:#ffc028; line-height:40px;}
+.login_wrap .btn_userInfo {float:left; display:block; width:49%; height:40px; margin-top:18px; background-color:#fff; font-family:'NotoSansKR-Medium'; font-size:15px; color:#ffc028; line-height:40px; cursor: pointer;}
+
+.login_wrap .userInfo {position: relative;}
+.login_wrap .userInfo .userProfile {overflow:hidden; position:absolute; left:0px; top:7px; display:block; width:70px; height:70px; border-radius:35px; border:1px solid #e1e1e1;}
+.login_wrap .userInfo .user {padding:20px 0 30px 80px; border-bottom:1px solid #fff; font-family:'NotoSansKR-Medium'; color:#fff; line-height:20px;}
+
+/* 퀵 메뉴 */
+.mainVisual_wrap .quickMenu {overflow:hidden; position:absolute; right:17px; bottom:88px; width:306px;}
+.mainVisual_wrap .quickMenu > li {float:left; width:48%; height:115px; margin:1%; box-sizing:border-box; -webkit-box-sizing:border-box; -moz-box-sizing:border-box;}
+.mainVisual_wrap .quickMenu > li > a {display:block; padding-top:85px; font-family:'NotoSansKR-Medium'; font-size:15px; color:#fff; text-align:center;}
+.mainVisual_wrap .quickMenu > li.qm1 {background-color:rgba(288, 62, 62, 0.9);}
+.mainVisual_wrap .quickMenu > li.qm1 > a {background:url('../../images/main/ico_quickMenu_1.png') center 28px no-repeat;}
+.mainVisual_wrap .quickMenu > li.qm2 {background-color:rgba(38, 69, 147, 0.9);}
+.mainVisual_wrap .quickMenu > li.qm2 > a {background:url('../../images/main/ico_quickMenu_2.png') center 28px no-repeat;}
+.mainVisual_wrap .quickMenu > li.qm3 {background-color:rgba(119, 179, 212, 0.9);}
+.mainVisual_wrap .quickMenu > li.qm3 > a {background:url('../../images/main/ico_quickMenu_3.png') center 28px no-repeat;}
+
+/* 관리자 메세지 */
+.adminMessage_wrap {width:100%; margin:30px 0; text-align:center;}
+.adminMessage_wrap .adminMessage {
+	position:relative;
+	display:inline-block; *display:block; *zoom:1;
+	width:1000px;
+	padding:12px;
+	background-color:#fff;
+	border:1px solid #e1e1e1;
+	text-align:left;
+	border-radius:20px; -webkit-border-radius:20px; -moz-border-radius:20px;
+}
+.adminMessage_wrap .adminMessage p {padding-left:60px; font-size:13px; color:#555;}
+.adminMessage_wrap .adminMessage .ico_admin {display:block; position:absolute; left:-10px; top:-10px; width:58px; height:58px; background:url('../../images/main/ico_adminMessage.png') no-repeat;}
+
+/* 메인 배너 */
+.mainBanner_wrap {position:relative;}
+.mainBanner_wrap .mainBanner {overflow:hidden; border:1px solid #e1e1e1; background-color:#fff;}
+.mainBanner_wrap .mainBanner > li {float:left; width:25%;}
+.mainBanner_wrap .mainBanner > li.notice {padding:20px 25px;}
+.mainBanner_wrap .mainBanner > li.notice > a.btn_more {position:absolute; top:28px; right:14px; z-index:1; padding-right:15px;
+	background:url('../../images/main/btn_more.png') right center no-repeat; font-size:13px; line-height:12px;}
+.mainBanner_wrap .mainBanner > li.notice > ul {margin-top:25px;}
+.mainBanner_wrap .mainBanner > li.notice > ul > li {margin-top:15px;}
+.mainBanner_wrap .mainBanner > li.notice > ul > li:first-child {margin-top:0px;}
+.mainBanner_wrap .mainBanner > li.notice > ul > li > a {font-size:13px; color:#555;}
+.mainBanner_wrap .mainBanner > li.notice > ul > li > a > span.txt {display:block; float:left; width:75%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height:29px;padding-right:5px;}
+.mainBanner_wrap .mainBanner > li.notice > ul > li > a > span.day {display:block; float:right; width:25%; line-height:29px; text-align:right;}
+.mainBanner_wrap .mainBanner > li.statistics {width:50%; padding:20px 25px;}
+
+.statistics .explain {margin-top:15px; font-size:14px; color:#555;}
+.statistics .infoList {overflow:hidden; margin-top:30px;}
+.statistics .infoList > li {float:left; width:122px; height:122px; margin:6px; border:1px solid #e1e1e1; text-align:center;}
+.statistics .infoList > li .tit {padding-top:90px; font-size:13px; color:#333;}
+.statistics .infoList > li.no1 .tit {background:url('../../images/main/ico_statistics_01.png') center 20px no-repeat;}
+.statistics .infoList > li.no2 .tit {background:url('../../images/main/ico_statistics_02.png') center 20px no-repeat;}
+.statistics .infoList > li.no3 .tit {background:url('../../images/main/ico_statistics_03.png') center 20px no-repeat;}
+.statistics .infoList > li.no4 .tit {background:url('../../images/main/ico_statistics_04.png') center 20px no-repeat;}
+
+/*------------------------------------------------------------------------------------------
+                                         * 지도서비스 *
+-------------------------------------------------------------------------------------------*/
+
+/* 지도서비스 */
+.mapSearchResult_wrap .searchResult .tit {margin-bottom:10px; font-size:14px; color:#555;}
+
+/*------------------------------------------------------------------------------------------
+                                         * 공사원인관리 *
+-------------------------------------------------------------------------------------------*/
+
+/* 규제관리 */
+.searchResult_wrap .searchResult .tit {margin-bottom:10px; font-size:14px; color:#555;}
+
+
+/*------------------------------------------------------------------------------------------
+                                         * 통계관리 *
+-------------------------------------------------------------------------------------------*/
+
+
+.graph_wrap {margin-top:10px; background-color:#fff; border:1px solid #e1e1e1;}
+.graph_wrap .graph {min-height:200px;}
+
+/*------------------------------------------------------------------------------------------
+                                         * 회원가입 *
+-------------------------------------------------------------------------------------------*/
+
+.joinForm_wrap {width:600px; margin:80px auto; }
+.joinForm_wrap h1 {margin-bottom:30px; text-align:center;}
+.joinForm_wrap h1 > a {display:inline-block; *display:inline; *zoom:1; width:30%;}
+.joinForm_wrap h1 > a > img{ width:100%; }
+.joinForm_wrap .joinForm {padding:20px; background-color:#fff; border:1px solid #e1e1e1;}
+
+.joinForm_wrap .joinForm .agree_wrap {position:relative;}
+.joinForm_wrap .joinForm .agree_wrap h2 {margin-top:25px; margin-bottom:8px; font-size:16px; color:#333;}
+.joinForm_wrap .joinForm .agree_wrap .contBox {overflow-y:scroll; border:1px solid #e1e1e1; height:150px;}
+.joinForm_wrap .joinForm .agree_wrap .ab_r {position:absolute; right:0px; top:0px;}
+
+.joinForm_wrap .joinForm .inp_wrap {position:relative;}
+.joinForm_wrap .joinForm h2 {margin-top:20px; margin-bottom:12px; font-family:'NotoSansKR-Medium'; font-size:18px; color:#333;}
+.joinForm_wrap .joinForm .inp_wrap {margin-top:10px;}
+.joinForm_wrap .joinForm .inp_wrap:first-child {margin-top:0px;}
+.joinForm_wrap .joinForm .inp_wrap input[type=text],
+.joinForm_wrap .joinForm .inp_wrap input[type=password] {width:100%; height:46px; padding:20px 20px; font-size:16px; color:#333; line-height:46px;}
+.joinForm_wrap .joinForm .inp_wrap label {position:absolute; left:20px; top:15px; font-size:14px; color:#777;}

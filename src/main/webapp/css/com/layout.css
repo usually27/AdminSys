@@ -1,0 +1,121 @@
+@charset "utf-8";
+
+/*------------------------------------------------------------------------------------------------------------------------------------------
+	File : layout.css
+	Company : 공간정보기술(주)
+	Author : Jong-hun Park 2017-08
+	CSS 적용순서 : 아이디 > 태그와 클래스 > 클래스 > 태그
+	CSS 선택자 선언순서 : Type Selector, Layout Selector, Class Selector, Etc
+	CSS 속성 선언순서 : display, position, float/clear, overflow, width/height, margin/padding, border, background, color/font, align, etc
+--------------------------------------------------------------------------------------------------------------------------------------------*/
+
+#wrap {*zoom:1; position:relative; width:100%; min-width:1260px; min-height:100%;}
+#wrap.wrap_login {min-width:392px; height:100%; min-height:550px;}
+#wrap.wrap_login:before {display:none !important;}
+
+/*------------------------------------------------------------------------------------------
+                                         * Header_wrap *
+-------------------------------------------------------------------------------------------*/
+#header_wrap {position:absolute; left:0px; top:0px; z-index:100; width:100%; border-bottom:1px solid #e3e3e3; background-color:#ffffff;}
+#header {*zoom:1; position:relative; width:1235px; height:65px; margin:0 auto;}
+#header:after {content:""; display:block; clear:both;}
+#header .logo_header {display:inline; position:absolute; left:5px; top:18px;}
+#header .logo_header .logo {display:inline-block; vertical-align:middle;}
+#header .logo_header .name {display:inline-block; margin-left:10px; font-family:'NotoSansKR-Medium'; color:#000; line-height:33px; vertical-align:middle;}
+#header .loginInfo {display:inline; position:absolute; top:24px; right:0px; font-size:12px; color:#666;}
+#header .loginInfo .time {margin-right:10px; font-size:11px; line-height:24px;}
+#header .loginInfo .user {margin-right:10px; line-height:24px;}
+#header .loginInfo .btn {margin-top:-4px;}
+
+/*------------------------------------------------------------------------------------------
+                                         * Container *
+-------------------------------------------------------------------------------------------*/
+.bg_container_wrap {position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:0 !important;}
+.bg_container {position:relative; width:1235px; margin:0 auto; height:100%;}
+.bg_container .bg_snb {position:absolute; left:0px; top:0px; width:200px; height:100%; background-color:#2d3135; box-sizing:border-box; z-index:1;}
+#container {position:relative; width:1235px; margin:0 auto; padding:65px  0 50px 0; font-size:12px;}
+
+
+/*--------------------
+	Snb
+--------------------*/
+#snb {position:absolute; left:0px; top:66px; z-index:50; width:200px;}
+#snb .snb>li {position:relative; border-bottom:1px solid #000;}
+#snb .snb>li a.depth1 {display:block; height:60px; padding-left:40px; font-size:15px; line-height:60px; color:#fff; background:url('./../../images/common/bu_snb_off.gif') 28px center no-repeat; background-color:#2d3135}
+#snb .snb>li:hover,
+#snb .snb>li.on {background-color:#00a6ed;}
+#snb .snb>li:hover a.depth1,
+#snb .snb>li.on a.depth1 {background:url('./../../images/common/bu_snb_on.gif') 26px center no-repeat;}
+
+
+#snb .snb>li a.depth1 i.arrow {display:block; position:absolute; right:23px; top:50%; width:8px; height:8px; margin-top:-3px; background:url('./../../images/common/ico_snb_depth1_off.png') center center no-repeat; text-indent:-9999px;}
+
+#snb .snb>li .submenu_wrap {display:none; padding:12px 0; background-color:#2b2f3e;}
+#snb .snb>li .submenu_wrap li a {display:block; padding:9px 0 9px 40px; color:#fff; font-size:13px;}
+#snb .snb>li .submenu_wrap li a:hover {background-color:#2a9dc9;}
+#snb .snb>li .submenu_wrap li a span {display:inline-block; padding-left:12px;}
+
+#snb .snb>li.on a.depth1 i.arrow {right:22px; top:33px; background:url('./../../images/common/ico_snb_depth1_on.png') center center no-repeat;}
+#snb .snb>li.on a.depth1,
+#snb .snb>li a.depth1:hover {color:#fff;}
+#snb .snb>li.on .submenu_wrap {display:block; background-color:#454a5e;}
+
+/*--------------------
+	Content
+--------------------*/
+#content {margin-left:235px; padding:40px 0;}
+.content_header {position:relative; height:35px; border-bottom:2px solid #2d3135; margin-bottom:30px;}
+.content_header .breadcrumb {position:absolute; top:3px; right:0px; display:inline-block; *display:inline; *zoom:1;}
+.content_header .breadcrumb li {float:left; margin-left:10px; padding-left:12px; font-size:12px; line-height:13px; background:url('./../../images/common/bu_breadcrumb_arrow.gif') left center no-repeat;}
+.content_header .breadcrumb li a {display:inline-block; color:#8c8c8c; line-height:13px;}
+.content_header .breadcrumb li:first-child {margin-left:0px; padding-left:18px; background:url('./../../images/common/ico_home.png') left center no-repeat;}
+.content_header .breadcrumb li.active {color:#2e2f3a;}
+.content_header .currentPage {padding-top:3px; font-size:18px; font-weight:bold; color:#3a332a;}
+
+/* Footer */
+#footer_wrap {position:absolute; left:0px; bottom:0px; z-index:100; width:100%; height:50px; border-top:1px solid #e8e8e8; background-color:#ffffff;}
+#footer {width:1235px; height:49px; margin:0 auto;}
+#footer .copyright {font-size:11px; line-height:49px; text-align:center;}
+
+
+/*------------------------------------------------------------------------------------------
+                                         * LayerPop *
+-------------------------------------------------------------------------------------------*/
+/*--------------------
+	Common
+--------------------*/
+.lp_wrap {display:none; position:fixed; left:0px; top:0px; width:100%; height:100%; min-height:100%; background:url('./../../images/common/bg_black_70per.png') repeat; z-index:9999; /*perspective:1000px;*/ text-align:center;}
+.lp_wrap:after {content:""; display:inline-block; height:100%; vertical-align:middle;}
+.lp_wrap.on {display:block;}
+
+.lp_wrap .lp_inner {display:inline-block; position:relative; min-width:400px; background-color:#fff; vertical-align:middle; text-align:center;}
+.lp_wrap .lp_inner .lp_header h1 {display:block; height:50px; padding:0 15px; font-family:"NotoSansKR-Medium"; color:#fff; font-size:16px; background-color:#0CA1D9; line-height:52px; text-align:left;}
+/*.lp_wrap .lp_inner .lp_body {overflow:auto}*/
+.lp_wrap .lp_inner .lp_body .lp_box {padding:20px;}
+.lp_wrap .lp_inner .lp_body .lp_box .hgroup_wrap {width:100%;}
+.lp_wrap .lp_inner .lp_body .lp_box .hgroup_wrap h2 {display:inline-block; font-size:14px; color:#000;}
+
+
+.lp_wrap .lp_inner>.lp_close {display:block; width:22px; height:22px; position:absolute; right:14px; top:14px; z-index:1; background:url('./../../images/common/btn_lp_close.png') no-repeat;}
+@media all and (max-width:400px) {
+	.lp_wrap .lp_inner {min-width:initial;}
+}
+@media all and (max-width:400px) {
+	.lp_wrap {background:none; background-color:#fff;}
+}
+
+.lp_w1200>.lp_inner {width:1200px;}
+.lp_w800>.lp_inner {width:800px;}
+.lp_w600>.lp_inner {width:600px;}
+.lp_w400>.lp_inner {width:400px;}
+
+.lp_wrap .btn_wrap .btn {margin-left:4px;}
+
+
+/*------------------------------------------------------------------------------------------
+                                         * 원도우 팝업 *
+-------------------------------------------------------------------------------------------*/
+/*원도우팝업*/
+.lp_wrap.wp_type {display:block; position:initial; left:initial; top:initial; overflow-y:initial; height:initial;background:none;}
+.lp_wrap.wp_type:before {float:left; content:initial; height:initial; vertical-align:initial;}
+.lp_wrap.wp_type .lp_inner {display:block; width:100%;}

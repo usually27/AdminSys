@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="admin.common.util.code.service.CommonCodeMapper">
+
+	<!-- 공통코드 -->
+	<select id="getCommonCode" parameterType="map" resultType="map">
+	<![CDATA[
+		SELECT CD   AS VALUE,
+		       CMMT AS NAME
+		FROM   M_CODE
+		WHERE  CDN = #{codeId}
+		ORDER  BY CD
+	]]>
+	</select>
+
+	<!-- 공통코드 -->
+	<select id="getCommonCode2" parameterType="map" resultType="map">
+	<![CDATA[
+		SELECT CD   AS VALUE,
+		       CMMT AS NAME
+		FROM   M_CODE
+		WHERE  CDN = #{codeId}
+		AND      REFCDTP = #{refcdtp}
+		ORDER  BY CD
+	]]>
+	</select>
+
+	<!-- 시 정보(법정동) -->
+	<select id="getSidoB" parameterType="map" resultType="map">
+	<![CDATA[
+		SELECT '26' AS VALUE, '부산시' AS NAME
+	]]>
+	</select>
+
+	<!-- 선택한 시에 따른 구군명(법정동) -->
+	<select id="getGugunB" parameterType="map" resultType="map">
+	<![CDATA[
+		SELECT *
+		FROM   (SELECT SUBSTR(ADM_SECT_C, 3, 3) AS VALUE,
+		               SGG_NM                   AS NAME
+		        FROM   LP_AA_SGG
+		        WHERE  SGG_NM IS NOT NULL
+		               AND SUBSTR(ADM_SECT_C, 1, 2) = #{sidoCode}
+		        GROUP  BY SUBSTR(ADM_SECT_C, 3, 3),
+		                  SGG_NM)TEMP
+		ORDER  BY NAME
+	]]>
+	</select>
+
+	<!-- 선택한 구군명에 따른 읍면동(법정동) -->
+	<select id="getUmdB" parameterType="map" resultType="map">
+	<![CDATA[
+		SELECT * FROM (
+		    SELECT
+		        SUBSTR( EMD_CD, 6, 3) AS VALUE,
+		        EMD_NM AS NAME
+		    FROM LP_AA_EMD
+		    WHERE
+		        SUBSTR( EMD_CD, 1, 5)  = #{sidoCode} || #{gugunCode}
+		        AND EMD_NM IS NOT NULL
+		    GROUP BY EMD_NM, SUBSTR( EMD_CD, 6, 3)
+		)TEMP ORDER BY NAME
+	]]>
+	</select>
+
+	<!-- 선택한 읍면동 정보에 따른 리(법정동) -->
+	<select id="getRiB" parameterType="map" resultType="map">
+	<![CDATA[
+		SELECT * FROM (
+		    SELECT
+		        SUBSTR( RI_CD, 9, 2) AS VALUE,
+		        RI_NM AS NAME
+		    FROM LP_AA_RI
+		    WHERE
+		        SUBSTR( RI_CD, 1, 8)  = #{sidoCode} || #{gugunCode} || #{umdCode}
+		        AND RI_NM IS NOT NULL
+		    GROUP BY RI_NM, SUBSTR( RI_CD, 9, 2)
+		)TEMP ORDER BY NAME;
+	]]>
+	</select>
+
+
+	<select id="getAuthCode" parameterType="map" resultType="map">
+	<![CDATA[
+		SELECT * FROM (
+			SELECT ROLE_ID AS VALUE
+				   ,ROLE_NM AS NAME
+			  FROM MENU_ROLE
+			 WHERE ROLE_ID LIKE 'R%'
+			 ORDER BY ROLE_ID
+		) A ORDER BY VALUE
+	]]>
+	</select>
+
+
+</mapper>

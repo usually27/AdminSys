@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="admin.board.service.NoticeMgrMapper">
+
+<!-- <select id="noticeList" parameterType="admin.board.service.NoticeMgrVO" resultType="admin.board.service.NoticeMgrVO"> -->
+<select id="noticeList" parameterType="map" resultType="egovMap">
+		<![CDATA[
+			SELECT NT_PART,NT_TITLE, NT_CONTENT,
+				   NT_READNUM, TOTALROWS, TO_CHAR(NT_START, 'yyyy-mm-dd') as NT_START, TO_CHAR(NT_END, 'yyyy-mm-dd') as NT_END,
+				   '관리자' AS USER_NM,NT_NUM,
+				   (TOTALROWS - NUM +1) AS NUM,
+				   TO_CHAR(NT_DATE, 'YYYY.MM.DD') as NT_DATE
+			  FROM (SELECT A.*
+						,TO_CHAR(LAST_VALUE(ROWNUM)
+						OVER (ORDER BY ROWNUM ROWS BETWEEN CURRENT
+						ROW AND UNBOUNDED FOLLOWING)) AS TOTALROWS
+						,ROWNUM NUM
+					FROM (SELECT NT_PART, NT_TITLE, NT_NUM, NT_DATE, NT_READNUM, NT_START, NT_END, NT_CONTENT
+							FROM NOTICE_WORK
+						   WHERE 1=1
+		]]>
+						<if test="ntPart != null and ntPart !=''">
+							AND NT_PART = #{ntPart}
+						</if>
+						<choose>
+							<when test="searchType == 'nt_title'">
+								AND NT_TITLE LIKE '%'|| #{word} || '%'
+							</when>
+							<otherwise>
+								AND NT_CONTENT LIKE '%'|| #{word} || '%'
+							</otherwise>
+						</choose>
+		<![CDATA[	
+						  ORDER BY NT_NUM DESC
+						) A
+				) A
+			  WHERE NUM BETWEEN #{rows} * ( #{page} - 1 ) + 1 AND #{rows}* #{page}
+		]]>
+	</select>
+	
+	<select id="noticeListTotCnt" parameterType="admin.board.service.NoticeMgrVO" resultType="int">
+		<![CDATA[
+			SELECT COUNT(*)
+			  FROM NOTICE_WORK
+			 WHERE 1=1
+		]]>
+			<if test="ntPart != ''">
+				AND NT_PART = #{ntPart}
+			</if>
+			<choose>
+				<when test="searchType == 'nt_title'">
+					AND NT_TITLE LIKE '%'|| #{word} || '%'
+				</when>
+				<otherwise>
+					AND NT_CONTENT LIKE '%'|| #{word} || '%'
+				</otherwise>
+			</choose>
+	</select>
+	
+	<select id="noticeDetail" parameterType="admin.board.service.NoticeMgrVO" resultType="egovMap">
+		<![CDATA[
+			SELECT NT_PART, NT_TITLE, NT_NUM, NT_READNUM, TO_CHAR(NT_START, 'yyyymmdd') as NT_START, TO_CHAR(NT_END, 'yyyymmdd') as NT_END,
+				   replace( replace(replace(NT_CONTENT,chr(10),' '),chr(13),'\n'), '<br>', '\n' ) as NT_CONTENT,
+				   TO_CHAR(NT_DATE, 'YYYY.MM.DD') AS NT_DATE
+			  FROM NOTICE_WORK
+			 WHERE NT_NUM = #{noticeNum}
+		]]>
+	</select>
+	
+	<update id="noticeUpdateReadNum" parameterType="String">
+		<![CDATA[
+			UPDATE NOTICE_WORK SET NT_READNUM = NT_READNUM +1 WHERE NT_NUM = #{noticeNum}
+		]]>
+	</update>
+	
+	<insert id="noticeMgrInsert" parameterType="admin.board.service.NoticeMgrVO">
+		<![CDATA[
+			INSERT INTO NOTICE_WORK
+						(NT_NUM, NT_PART, NT_TITLE, NT_DATE, NT_CONTENT, NT_READNUM, NT_START, NT_END)
+				   VALUES((SELECT NVL(MAX(NT_NUM),0)+1 FROM NOTICE_WORK), #{ntPart}, #{ntTitle}, sysdate, replace(#{ntContent},'\n','<br>'), 0, #{ntStart}, #{ntEnd})
+		]]>
+	</insert>
+	
+	<update id="noticeMgrUpdate" parameterType="admin.board.service.NoticeMgrVO">
+		<![CDATA[
+			UPDATE NOTICE_WORK 
+			   SET NT_PART = #{ntPart}
+				   ,NT_TITLE = #{ntTitle}
+				   ,NT_CONTENT = replace(#{ntContent},'\n','<br>')
+				   ,NT_START = #{ntStart}
+				   ,NT_END = #{ntEnd}
+			 WHERE NT_NUM = #{ntNum}
+		]]>
+	</update>
+	
+	<delete id="noticeMgrDelete" parameterType="String">
+		<![CDATA[
+			DELETE FROM NOTICE_WORK WHERE NT_NUM = #{noticeNum}
+		]]>
+	</delete>
+
+
+</mapper>
